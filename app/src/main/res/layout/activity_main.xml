@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout2"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list_item"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:ignore="MissingConstraints"
+        tools:listitem="@layout/card_post">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top"
+        app:constraint_referenced_ids="editTextContent, saveButton"
+        tools:layout_editor_absoluteY="675dp" />
+
+    <EditText
+        android:id="@+id/editTextContent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/primaryTransparent"
+        android:ems="10"
+        android:hint="@string/enter_text"
+        android:inputType="textMultiLine"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/saveButton"
+        app:layout_constraintStart_toStartOf="parent"
+        android:autofillHints="" />
+
+    <ImageButton
+        android:id="@+id/saveButton"
+        android:layout_width="0dp"
+        android:layout_height="51dp"
+        android:contentDescription="@string/sent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="#FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/editTextContent"
+        app:srcCompat="@android:drawable/ic_menu_send" />
+
+    <LinearLayout
+        android:id="@+id/layoutCancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:padding="1dip"
+        android:background="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/editTextContent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageButton
+            android:id="@+id/imageBtnPencil"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:background="@color/primaryTransparent"
+            android:contentDescription="@string/picture"
+            app:srcCompat="@android:drawable/ic_menu_edit" />
+
+        <TextView
+            android:id="@+id/textViewEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_weight="4"
+            android:background="@color/primaryTransparent"
+            android:gravity="center_vertical"
+            android:text="@string/edit_post" />
+
+        <ImageButton
+            android:id="@+id/imageBtnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:background="@color/primaryTransparent"
+            android:contentDescription="@string/cancel"
+            app:srcCompat="@android:drawable/btn_dialog" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
