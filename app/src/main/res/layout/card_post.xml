@@ -49,38 +49,69 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:background="@android:color/transparent"
+        android:contentDescription="@string/name_menubutton"
         app:layout_constraintBottom_toBottomOf="@+id/imgAvatar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/imgAvatar"
-        app:srcCompat="@drawable/ic_baseline_more_vert_24"
-        android:contentDescription="@string/name_menubutton" />
+        app:srcCompat="@drawable/ic_baseline_more_vert_24" />
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrier"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
-        app:constraint_referenced_ids="imgAvatar,author, txtDate, menu" />
+        app:constraint_referenced_ids="imgAvatar,author, txtDate, menu"
+        tools:layout_editor_absoluteY="80dp" />
 
     <TextView
         android:id="@+id/text_Data"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:layout_marginBottom="16dp"
         android:scrollHorizontally="false"
-        app:layout_constraintBottom_toTopOf="@+id/barrier_end"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/barrier"
         tools:text="@sample/test_data.json/data/content" />
+
+    <FrameLayout
+        android:id="@+id/layoutVideo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/barrier_end"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_Data">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/videoViewPlay"
+            android:layout_width="150sp"
+            android:layout_height="150sp"
+            android:layout_margin="16dp"
+            android:layout_gravity="center"
+            android:background="@drawable/video_icon"
+            android:foreground="@drawable/video_icon" />
+
+        <ImageView
+            android:id="@+id/imageViewPlay"
+            android:layout_width="24sp"
+            android:layout_height="24sp"
+            android:elevation="4dp"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/ic_play_24" />
+
+    </FrameLayout>
+
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrier_end"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
-        app:constraint_referenced_ids="text_Data" />
+        app:constraint_referenced_ids="layoutVideo"
+        tools:layout_editor_absoluteY="230dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/like"

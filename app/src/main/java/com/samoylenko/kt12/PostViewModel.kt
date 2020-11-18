@@ -4,15 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-private val empty = Post (
-            id = 0,
-            author = "0",
-            content = "",
-            published = "",
-            sharing = 0,
-            like = 0,
-            countVisability = 0,
-            likedByMe = false
+private val empty = Post(
+    id = 0,
+    author = "0",
+    content = "",
+    published = "",
+    sharing = 0,
+    like = 0,
+    countVisability = 0,
+    video = "",
+    likedByMe = false
 )
 
 class PostViewModel : ViewModel() {
@@ -31,15 +32,20 @@ class PostViewModel : ViewModel() {
         edited.value = empty
     }
 
-    fun changeContent(content: String){
+    fun changeContent(content: String, video: String) {
         val text = content.trim()
-        if (edited.value?.content == text){
+        val video = video.trim()
+        if (edited.value?.content == text && edited.value?.video == video) {
             return
         }
-        edited.value = edited.value?.copy(content = text)
+        if (video == "") {
+            edited.value = edited.value?.copy(content = text, video = "")
+        } else {
+            edited.value = edited.value?.copy(content = text, video = video)
+        }
     }
 
-    fun edit(post: Post){
+    fun edit(post: Post) {
         edited.value = post
     }
 }

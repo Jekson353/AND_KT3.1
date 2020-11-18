@@ -1,6 +1,7 @@
 package com.samoylenko.kt12
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
@@ -13,6 +14,7 @@ interface OnInteractionListener {
     fun onEdit(post: Post) {}
     fun onRemove(post: Post) {}
     fun onShare(post: Post) {}
+    fun playVideo(post: Post){}
 }
 
 class PostAdapter(
@@ -54,6 +56,10 @@ class PostViewHolder(
             like.text = Calc.intToText(post.like)
             share.text = post.sharing.toString()
             like.isChecked = post.likedByMe
+            if (post.video != ""){
+                layoutVideo.visibility = View.VISIBLE
+                videoViewPlay.text = post.video
+            }
 
             like.setOnClickListener {
                 onInteractionListener.onLike(post)
@@ -79,6 +85,9 @@ class PostViewHolder(
                         }
                     }
                 }.show()
+            }
+            videoViewPlay.setOnClickListener {
+                onInteractionListener.playVideo(post)
             }
         }
     }

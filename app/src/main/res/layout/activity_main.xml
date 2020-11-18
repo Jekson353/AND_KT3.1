@@ -25,44 +25,4 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_input_add" />
-
-    <LinearLayout
-        android:id="@+id/layoutCancel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/black"
-        android:orientation="horizontal"
-        android:padding="1dip"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <ImageButton
-            android:id="@+id/imageBtnPencil"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:background="@color/primaryTransparent"
-            android:contentDescription="@string/picture"
-            app:srcCompat="@android:drawable/ic_menu_edit" />
-
-        <TextView
-            android:id="@+id/textViewEdit"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_weight="4"
-            android:background="@color/primaryTransparent"
-            android:gravity="center_vertical"
-            android:text="@string/edit_post" />
-
-        <ImageButton
-            android:id="@+id/imageBtnCancel"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:background="@color/primaryTransparent"
-            android:contentDescription="@string/cancel"
-            app:srcCompat="@android:drawable/btn_dialog" />
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

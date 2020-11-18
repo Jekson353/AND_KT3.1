@@ -11,16 +11,30 @@
         android:layout_width="0sp"
         android:layout_height="0sp"
         android:layout_margin="15sp"
+        android:autofillHints="false"
         android:background="@drawable/border"
         android:ems="10"
         android:gravity="start|top"
         android:inputType="textMultiLine"
-        app:layout_constraintBottom_toTopOf="@+id/savePost"
+        app:layout_constraintBottom_toTopOf="@+id/inputUrlVideo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:autofillHints="false"
         tools:ignore="LabelFor" />
+
+    <EditText
+        android:id="@+id/inputUrlVideo"
+        android:layout_width="0sp"
+        android:layout_height="wrap_content"
+        android:layout_margin="15sp"
+        android:ems="10"
+        android:hint="@string/text_enter_video"
+        app:layout_constraintBottom_toTopOf="@+id/savePost"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextPost"
+        android:autofillHints="false"
+        android:inputType="textUri" />
 
     <Button
         android:id="@+id/savePost"

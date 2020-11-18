@@ -14,4 +14,5 @@
     <string name="delete">Удалить</string>
     <string name="edit">Редактировать</string>
     <string name="save">Сохранить</string>
+    <string name="text_enter_video">Введите ссылку на видео</string>
 </resources>

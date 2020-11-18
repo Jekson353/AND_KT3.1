@@ -13,4 +13,5 @@
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
     <string name="save">Save</string>
+    <string name="text_enter_video">Enter URL for video</string>
 </resources>

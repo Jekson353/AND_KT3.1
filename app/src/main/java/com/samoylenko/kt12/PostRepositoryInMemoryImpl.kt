@@ -14,6 +14,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
             sharing = 0,
             like = 995,
             countVisability = 10,
+            video = "",
             likedByMe = false
         ),
         Post(
@@ -24,6 +25,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
             sharing = 0,
             like = 2,
             countVisability = 230,
+            video = "https://www.youtube.com/watch?v=8riWu4xkJ3M",
             likedByMe = false
         ),
         Post(
@@ -34,6 +36,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
             sharing = 0,
             like = 15,
             countVisability = 6,
+            video = "",
             likedByMe = false
         ),
         Post(
@@ -44,6 +47,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
             sharing = 0,
             like = 995,
             countVisability = 10,
+            video = "",
             likedByMe = false
         )
     )
@@ -87,6 +91,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
                     sharing = 0,
                     like = 0,
                     countVisability = 0,
+                    video = "",
                     likedByMe = false
 
                 )
@@ -95,7 +100,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
             return
         }
         posts = posts.map {
-            if (it.id != post.id) it else it.copy(content = post.content)
+            if (it.id != post.id) it else it.copy(content = post.content, video = post.video)
         }
         data.value = posts
     }
