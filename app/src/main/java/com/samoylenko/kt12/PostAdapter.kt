@@ -56,7 +56,7 @@ class PostViewHolder(
             like.text = Calc.intToText(post.like)
             share.text = post.sharing.toString()
             like.isChecked = post.likedByMe
-            if (post.video != ""){
+            if (!post.video.equals("")){
                 layoutVideo.visibility = View.VISIBLE
                 videoViewPlay.text = post.video
             }

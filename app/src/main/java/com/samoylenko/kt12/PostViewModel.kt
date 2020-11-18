@@ -1,5 +1,7 @@
 package com.samoylenko.kt12
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,11 +18,10 @@ private val empty = Post(
     likedByMe = false
 )
 
-class PostViewModel : ViewModel() {
-    private val repository: PostRepository = PostRepositoryInMemoryImpl()
+class PostViewModel(application: Application) : AndroidViewModel(application) {
+    private val repository: PostRepository = PostRepositoryFiles(application)
     val data: LiveData<List<Post>> = repository.getAll()
     val edited: MutableLiveData<Post> = MutableLiveData(empty)
-
 
     fun likeById(id: Long) = repository.likeById(id)
     fun shareById(id: Long) = repository.shareById(id)
@@ -34,14 +35,14 @@ class PostViewModel : ViewModel() {
 
     fun changeContent(content: String, video: String) {
         val text = content.trim()
-        val video = video.trim()
-        if (edited.value?.content == text && edited.value?.video == video) {
+        val textVideo = video.trim()
+        if (edited.value?.content == text && edited.value?.video == textVideo) {
             return
         }
-        if (video == "") {
+        if (textVideo.equals("")) {
             edited.value = edited.value?.copy(content = text, video = "")
         } else {
-            edited.value = edited.value?.copy(content = text, video = video)
+            edited.value = edited.value?.copy(content = text, video = textVideo)
         }
     }
 
