@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == POST_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             val textPost = data.getStringExtra("textPost")
-            var textUrl = data.getStringExtra("urlVideo")
+            val textUrl = data.getStringExtra("urlVideo")
 
             if (TextUtils.isEmpty(textPost)) {
                 Toast.makeText(
