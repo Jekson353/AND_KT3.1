@@ -1,23 +1,29 @@
 package com.samoylenko.kt12
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
-import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.samoylenko.kt12.databinding.ActivityMainBinding
-import kotlinx.android.synthetic.main.activity_main.view.*
 
 class MainActivity : AppCompatActivity() {
+    companion object {
+        const val POST_REQUEST_CODE = 10
+    }
+
+    private val viewModel: PostViewModel by viewModels()
+
+    private val binding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val viewModel: PostViewModel by viewModels()
-        val adapter = PostAdapter(object : OnInteractionListener{
+        val adapter = PostAdapter(object : OnInteractionListener {
             override fun onEdit(post: Post) {
                 viewModel.edit(post)
             }
@@ -31,56 +37,59 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onShare(post: Post) {
-                viewModel.shareById(post.id)
+                Intent(Intent.ACTION_SEND)
+                    .putExtra(Intent.EXTRA_TEXT, post.content)
+                    .setType("text/plain")
+                    .also {
+                        if (it.resolveActivity(packageManager) == null) {
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Нет приложений для отправки сообщений",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            viewModel.shareById(post.id)
+                            startActivity(it)
+                        }
+                    }
             }
-        }
-        )
+        })
 
         binding.listItem.adapter = adapter
         viewModel.data.observe(this, { posts ->
             adapter.submitList(posts)
         })
 
-        viewModel.edited.observe(this, {post ->
-            if (post.id ==0L){
+        binding.addPostButton.setOnClickListener {
+            startActivityForResult(Intent(this, PostActivity::class.java), POST_REQUEST_CODE)
+        }
+
+        viewModel.edited.observe(this, { post ->
+            if (post.id == 0L) {
                 return@observe
             }
-            with(binding.editTextContent){
-                requestFocus()
-                binding.layoutCancel.visibility = View.VISIBLE
-                setText(post.content)
-            }
+
+            val intent = Intent(this, PostActivity::class.java)
+            intent.putExtra("textPost", post.content)
+            startActivityForResult(intent, POST_REQUEST_CODE)
         })
-
-        binding.saveButton.setOnClickListener {
-            with(binding.editTextContent){
-                if (TextUtils.isEmpty(text)){
-                    Toast.makeText(
-                        this@MainActivity,
-                        "Текст не может быть пустым",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@setOnClickListener
-                }
-                viewModel.changeContent(text.toString())
-                viewModel.save()
-
-                binding.layoutCancel.visibility = View.GONE
-                setText("")
-                clearFocus()
-                AndroidUtils.hideSoftKeyBoard(this)
-            }
-        }
-
-        binding.imageBtnCancel.setOnClickListener {
-            with(binding.editTextContent){
-                setText("")
-                clearFocus()
-                binding.layoutCancel.visibility = View.GONE
-                AndroidUtils.hideSoftKeyBoard(this)
-            }
-        }
-
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == POST_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            val text = data.getStringExtra(Intent.EXTRA_TEXT)
+
+            if (TextUtils.isEmpty(text)) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "Текст не может быть пустым",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return
+            }
+            viewModel.changeContent(text!!.toString())
+            viewModel.save()
+        }
+    }
 }

@@ -14,51 +14,27 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:ignore="MissingConstraints"
         tools:listitem="@layout/card_post">
-
     </androidx.recyclerview.widget.RecyclerView>
 
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/barrier3"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addPostButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:barrierDirection="top"
-        app:constraint_referenced_ids="editTextContent, saveButton"
-        tools:layout_editor_absoluteY="675dp" />
-
-    <EditText
-        android:id="@+id/editTextContent"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/primaryTransparent"
-        android:ems="10"
-        android:hint="@string/enter_text"
-        android:inputType="textMultiLine"
-        android:padding="16dp"
+        android:layout_margin="10sp"
+        android:contentDescription="@string/add_post"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/saveButton"
-        app:layout_constraintStart_toStartOf="parent"
-        android:autofillHints="" />
-
-    <ImageButton
-        android:id="@+id/saveButton"
-        android:layout_width="0dp"
-        android:layout_height="51dp"
-        android:contentDescription="@string/sent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:background="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/editTextContent"
-        app:srcCompat="@android:drawable/ic_menu_send" />
+        app:srcCompat="@android:drawable/ic_input_add" />
 
     <LinearLayout
         android:id="@+id/layoutCancel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        android:padding="1dip"
         android:background="@color/black"
-        app:layout_constraintBottom_toTopOf="@+id/editTextContent"
+        android:orientation="horizontal"
+        android:padding="1dip"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 

@@ -10,4 +10,8 @@
     <string name="avatar">Аватар</string>
     <string name="text_like">Лайки</string>
     <string name="name_menubutton">Меню</string>
+    <string name="add_post">Добавить</string>
+    <string name="delete">Удалить</string>
+    <string name="edit">Редактировать</string>
+    <string name="save">Сохранить</string>
 </resources>

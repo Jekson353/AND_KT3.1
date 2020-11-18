@@ -8,11 +8,11 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.samoylenko.kt12.databinding.CardPostBinding
 
-interface OnInteractionListener{
-    fun onLike(post: Post){}
-    fun onEdit(post: Post){}
-    fun onRemove(post: Post){}
-    fun onShare(post: Post){}
+interface OnInteractionListener {
+    fun onLike(post: Post) {}
+    fun onEdit(post: Post) {}
+    fun onRemove(post: Post) {}
+    fun onShare(post: Post) {}
 }
 
 class PostAdapter(
@@ -51,12 +51,9 @@ class PostViewHolder(
             txtDate.text = post.published
             textData.text = post.content
             visability.text = post.countVisability.toString()
-            //countLike.text = Calc.intToText(post.like)
             like.text = Calc.intToText(post.like)
-            //countShare.text = post.sharing.toString()
             share.text = post.sharing.toString()
             like.isChecked = post.likedByMe
-            //like.setImageResource(if (post.likedByMe) R.drawable.ic_liked_24 else R.drawable.ic_baseline_favorite_border_24)
 
             like.setOnClickListener {
                 onInteractionListener.onLike(post)
@@ -68,9 +65,9 @@ class PostViewHolder(
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.options_post)
-                    setOnMenuItemClickListener {itemView ->
-                        when (itemView.itemId){
-                            R.id.deleteView ->{
+                    setOnMenuItemClickListener { itemView ->
+                        when (itemView.itemId) {
+                            R.id.deleteView -> {
                                 onInteractionListener.onRemove(post)
                                 true
                             }
@@ -80,7 +77,6 @@ class PostViewHolder(
                             }
                             else -> false
                         }
-
                     }
                 }.show()
             }
