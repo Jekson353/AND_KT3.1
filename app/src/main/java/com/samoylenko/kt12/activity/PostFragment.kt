@@ -35,9 +35,9 @@ class PostFragment : Fragment() {
         binding.editTextPost.requestFocus()
 
         binding.savePost.setOnClickListener {
-            val textPost = binding.editTextPost.text.toString()
+            val content = binding.editTextPost.text.toString()
             val urlPost = binding.inputUrlVideo.text.toString()
-            if (textPost.isEmpty()){
+            if (content.isEmpty()){
                 Toast.makeText(
                     requireActivity(),
                     "Текст не может быть пустым",
@@ -46,7 +46,7 @@ class PostFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            viewModel.changeContent(textPost, urlPost)
+            viewModel.changeContent(content, urlPost)
             viewModel.save()
 
             AndroidUtils.hideSoftKeyBoard(requireView())
