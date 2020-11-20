@@ -1,13 +1,11 @@
 package com.samoylenko.kt12.repository
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.samoylenko.kt12.dto.Post
-import java.util.prefs.Preferences
 
 class PostRepositoryFiles(context: Context) : PostRepository {
 

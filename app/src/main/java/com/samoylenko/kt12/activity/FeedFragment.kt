@@ -19,10 +19,6 @@ import com.samoylenko.kt12.viewmodel.PostViewModel
 
 
 class FeedFragment : Fragment() {
-    companion object {
-        var Bundle.textArg: String? by MainFragmentActivity.StringArg
-    }
-
     private val viewModel: PostViewModel by viewModels(ownerProducer = { requireActivity() })
     private val binding by lazy {
         FragmentFeedBinding.inflate(layoutInflater)
