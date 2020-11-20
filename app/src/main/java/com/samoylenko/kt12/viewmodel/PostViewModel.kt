@@ -1,10 +1,12 @@
-package com.samoylenko.kt12
+package com.samoylenko.kt12.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import com.samoylenko.kt12.dto.Post
+import com.samoylenko.kt12.repository.PostRepository
+import com.samoylenko.kt12.repository.PostRepositoryFiles
 
 private val empty = Post(
     id = 0,

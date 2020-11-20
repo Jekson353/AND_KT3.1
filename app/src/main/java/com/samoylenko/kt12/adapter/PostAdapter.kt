@@ -1,4 +1,4 @@
-package com.samoylenko.kt12
+package com.samoylenko.kt12.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,14 +7,18 @@ import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.samoylenko.kt12.R
 import com.samoylenko.kt12.databinding.CardPostBinding
+import com.samoylenko.kt12.dto.Post
+import com.samoylenko.kt12.util.Calc
 
 interface OnInteractionListener {
     fun onLike(post: Post) {}
     fun onEdit(post: Post) {}
     fun onRemove(post: Post) {}
     fun onShare(post: Post) {}
-    fun playVideo(post: Post){}
+    fun playVideo(post: Post) {}
+    fun onClickPost(post: Post) {}
 }
 
 class PostAdapter(
@@ -56,7 +60,7 @@ class PostViewHolder(
             like.text = Calc.intToText(post.like)
             share.text = post.sharing.toString()
             like.isChecked = post.likedByMe
-            if (!post.video.equals("")){
+            if (!post.video.equals("")) {
                 layoutVideo.visibility = View.VISIBLE
                 videoViewPlay.text = post.video
             }
@@ -88,6 +92,10 @@ class PostViewHolder(
             }
             videoViewPlay.setOnClickListener {
                 onInteractionListener.playVideo(post)
+            }
+
+            binding.root.setOnClickListener {
+                onInteractionListener.onClickPost(post)
             }
         }
     }

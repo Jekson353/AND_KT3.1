@@ -1,4 +1,4 @@
-package com.samoylenko.kt12
+package com.samoylenko.kt12.util
 
 import java.text.DecimalFormat
 

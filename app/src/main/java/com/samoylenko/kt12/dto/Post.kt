@@ -1,4 +1,4 @@
-package com.samoylenko.kt12
+package com.samoylenko.kt12.dto
 
 data class Post (
     val id:Long,
