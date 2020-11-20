@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".PostActivity">
+    android:layout_height="match_parent">
 
     <EditText
         android:id="@+id/editTextPost"
@@ -27,14 +26,14 @@
         android:layout_width="0sp"
         android:layout_height="wrap_content"
         android:layout_margin="15sp"
+        android:autofillHints="false"
         android:ems="10"
         android:hint="@string/text_enter_video"
+        android:inputType="textUri"
         app:layout_constraintBottom_toTopOf="@+id/savePost"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextPost"
-        android:autofillHints="false"
-        android:inputType="textUri" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextPost" />
 
     <Button
         android:id="@+id/savePost"
