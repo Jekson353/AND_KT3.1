@@ -2,11 +2,11 @@ package com.samoylenko.kt12.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.samoylenko.kt12.db.AppDb
 import com.samoylenko.kt12.dto.Post
 import com.samoylenko.kt12.repository.PostRepository
-import com.samoylenko.kt12.repository.PostRepositoryFiles
+import com.samoylenko.kt12.repository.PostRepositorySQLiteImpl
 
 private val empty = Post(
     id = 0,
@@ -21,9 +21,11 @@ private val empty = Post(
 )
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: PostRepository = PostRepositoryFiles(application)
-    val data: LiveData<List<Post>> = repository.getAll()
-    val edited: MutableLiveData<Post> = MutableLiveData(empty)
+    private val repository: PostRepository = PostRepositorySQLiteImpl(
+        AppDb.getInstance(application).postDao
+    )
+    val data = repository.getAll()
+    val edited = MutableLiveData(empty)
 
     fun likeById(id: Long) = repository.likeById(id)
     fun shareById(id: Long) = repository.shareById(id)
