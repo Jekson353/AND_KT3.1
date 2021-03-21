@@ -9,12 +9,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.samoylenko.kt12.R
-import com.samoylenko.kt12.databinding.FragmentPostBinding
+import com.samoylenko.kt12.databinding.FragmentNewPostBinding
 import com.samoylenko.kt12.util.AndroidUtils
 import com.samoylenko.kt12.viewmodel.PostViewModel
 
 
-class PostFragment : Fragment() {
+class NewPostFragment : Fragment() {
     private val viewModel: PostViewModel by viewModels(ownerProducer = { requireActivity() })
 
     override fun onCreateView(
@@ -23,7 +23,7 @@ class PostFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        val binding = FragmentPostBinding.inflate(inflater, container, false)
+        val binding = FragmentNewPostBinding.inflate(inflater, container, false)
 
         val textPost = arguments?.getString("textPost")
         val urlVideo = arguments?.getString("urlVideo")

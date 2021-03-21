@@ -1,6 +1,6 @@
 package com.samoylenko.kt12.dto
 
-data class Post (
+data class Post(
     val id:Long,
     val author: String,
     val content: String,

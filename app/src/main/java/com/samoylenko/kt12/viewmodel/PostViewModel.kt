@@ -10,7 +10,7 @@ import com.samoylenko.kt12.repository.PostRepositorySQLiteImpl
 
 private val empty = Post(
     id = 0,
-    author = "0",
+    author = "Локальное сохранение",
     content = "",
     published = "",
     sharing = 0,
