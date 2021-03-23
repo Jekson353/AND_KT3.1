@@ -15,4 +15,8 @@
     <string name="edit">Редактировать</string>
     <string name="save">Сохранить</string>
     <string name="text_enter_video">Введите ссылку на видео</string>
+    <string name="notification_user_liked">%1$s поставил лайк посту %2$s</string>
+    <string name="msg_token_fmt">Token: %1$s</string>
+    <string name="chanel_remote_name">Chanel</string>
+    <string name="chanel_remote_description">Description</string>
 </resources>

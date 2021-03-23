@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "794715480505",
+    "project_id": "samoylenko-kt12",
+    "storage_bucket": "samoylenko-kt12.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:794715480505:android:0e43a8056b633170afd668",
+        "android_client_info": {
+          "package_name": "com.samoylenko.kt12"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "794715480505-9cfck6hvsdr1g9e7ep0u7vlsjc2i9gb0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLGkduvkTn4oyY68ZwsjfMDOEA5vamI74"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "794715480505-9cfck6hvsdr1g9e7ep0u7vlsjc2i9gb0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

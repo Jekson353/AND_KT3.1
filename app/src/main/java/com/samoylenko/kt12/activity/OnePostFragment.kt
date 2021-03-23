@@ -33,7 +33,7 @@ class OnePostFragment : Fragment() {
                 content = arguments?.getString("content")!!,
                 published = arguments?.getString("txtDate")!!,
                 sharing = arguments?.getInt("share")!!,
-                like = arguments?.getInt("like")!!,
+                likes = arguments?.getInt("likes")!!,
                 countVisability = arguments?.getInt("visability")!!,
                 video = arguments?.getString("video")!!,
                 likedByMe = arguments?.getBoolean("likedByMe")!!
@@ -105,7 +105,7 @@ class OnePostFragment : Fragment() {
         binding.txtDate.text = onePost.published
         binding.textData.text = onePost.content
         binding.visability.text = onePost.countVisability.toString()
-        binding.like.text = onePost.like.toString()
+        binding.like.text = onePost.likes.toString()
         binding.share.text = onePost.sharing.toString()
         binding.like.isChecked = onePost.likedByMe
         if (!onePost.video.equals("")){

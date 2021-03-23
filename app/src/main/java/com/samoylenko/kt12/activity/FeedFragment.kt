@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -48,7 +49,7 @@ class FeedFragment : Fragment() {
                 bundle.putString("txtDate", post.published)
                 bundle.putString("content", post.content)
                 bundle.putInt("visability", post.countVisability)
-                bundle.putInt("like", post.like)
+                bundle.putInt("likes", post.likes)
                 bundle.putInt("share", post.sharing)
                 bundle.putString("video", post.video)
                 bundle.putBoolean("likedByMe", post.likedByMe)
@@ -90,12 +91,19 @@ class FeedFragment : Fragment() {
         })
 
         binding.listItem.adapter = adapter
-        viewModel.data.observe(viewLifecycleOwner, { posts ->
-            adapter.submitList(posts)
+        viewModel.data.observe(viewLifecycleOwner, { uimodel ->
+            adapter.submitList(uimodel.posts)
+            binding.errorGroup.isVisible = uimodel.error
+            binding.emptyText.isVisible = uimodel.empty
+            binding.progress.isVisible = uimodel.loading
         })
 
         binding.addPostButton.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_postFragment)
+        }
+
+        binding.errorButton.setOnClickListener {
+            viewModel.getPosts()
         }
 
         viewModel.edited.observe(viewLifecycleOwner, { post ->

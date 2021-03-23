@@ -57,7 +57,7 @@ class PostViewHolder(
             txtDate.text = post.published
             textData.text = post.content
             visability.text = post.countVisability.toString()
-            like.text = Calc.intToText(post.like)
+            like.text = Calc.intToText(post.likes)
             share.text = post.sharing.toString()
             like.isChecked = post.likedByMe
             if (!post.video.equals("")) {
