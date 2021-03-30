@@ -1,6 +1,7 @@
 package com.samoylenko.kt12.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,6 +12,10 @@ import com.samoylenko.kt12.repository.PostRepositorySQLiteImpl
 import com.samoylenko.kt12.uimodel.FeedModel
 import com.samoylenko.kt12.util.SingleLiveEvent
 import java.io.IOException
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.logging.Level
+import java.util.logging.Logger
 import kotlin.concurrent.thread
 
 private val empty = Post(
@@ -37,39 +42,47 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val postCreated: LiveData<Unit>
         get() = _postCreated
 
+    private val executorService = Executors.newFixedThreadPool(64)
+
     init {
         getPosts()
     }
 
     fun getPosts() {
-        thread {
-            // Начинаем загрузку
-            _state.postValue(FeedModel(loading = true))
-            try {
-                // Данные успешно получены
-                val posts = repository.getAll()
-                FeedModel(posts = posts, empty = posts.isEmpty())
-            } catch (e: IOException) {
-                // Получена ошибка
-                FeedModel(error = true)
-            }.also(_state::postValue)
-        }
+        // Начинаем загрузку
+        _state.postValue(FeedModel(loading = true))
+        // Данные успешно получены
+        repository.getAll(
+            object : PostRepository.Callback<List<Post>>{
+                override fun onSuccess(result: List<Post>) {
+                    _state.postValue(FeedModel(posts = result, empty = result.isEmpty()))
+                }
+
+                override fun onFailure(error: Throwable) {
+                    _state.postValue(FeedModel(error = true))
+                }
+            }
+        )
     }
 
     fun likeById(id: Long) {
-        thread {
-            repository.likeById(id)
-            val posts = repository.getAll()
-            _state.postValue(FeedModel(posts = posts))
-        }
+        repository.likeById(id, object : PostRepository.Callback<Post>{
+            override fun onSuccess(result: List<Post>) {
+                _state.postValue(FeedModel(posts = result, empty = result.isEmpty()))
+            }
+
+            override fun onFailure(error: Throwable) {
+                error.printStackTrace()
+            }
+        })
     }
 
     fun shareById(id: Long) {
-        thread { repository.shareById(id) }
+        executorService.execute { repository.shareById(id) }
     }
 
     fun removeById(id: Long) {
-        thread {
+        executorService.execute {
             val old = _state.value?.posts.orEmpty()
             _state.postValue(
                 _state.value?.copy(posts = _state.value?.posts.orEmpty()
@@ -86,10 +99,17 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun save() {
         edited.value?.let {
-            thread {
-                repository.save(it)
-                _postCreated.postValue(Unit)
-            }
+                repository.save( it, object : PostRepository.Callback<List<Post>> {
+                        override fun onSuccess(result: List<Post>) {
+                            _state.postValue(FeedModel(posts = result, empty = result.isEmpty()))
+                        }
+
+                        override fun onFailure(error: Throwable) {
+                            _state.postValue(FeedModel(error = true))
+                        }
+                    },
+                )
+                _postCreated.value = Unit
         }
         edited.value = empty
     }
@@ -109,5 +129,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun edit(post: Post) {
         edited.value = post
+    }
+
+    override fun onCleared() {
+        executorService.shutdown()
     }
 }
