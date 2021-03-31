@@ -14,6 +14,7 @@ import com.samoylenko.kt12.databinding.CardPostBinding
 import com.samoylenko.kt12.dto.Post
 import com.samoylenko.kt12.util.Calc
 import com.samoylenko.kt12.view.load
+import com.samoylenko.kt12.view.loadCircleCrop
 
 interface OnInteractionListener {
     fun onLike(post: Post) {}
@@ -56,7 +57,7 @@ class PostViewHolder(
     fun bind(post: Post) {
 
         binding.apply {
-            imgAvatar.load("${BuildConfig.BASE_URL}/avatars/${post.authorAvatar}")
+            imgAvatar.loadCircleCrop("${BuildConfig.BASE_URL}/avatars/${post.authorAvatar}")
             author.text = post.author
             txtDate.text = post.published
             textData.text = post.content
