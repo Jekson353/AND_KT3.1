@@ -75,7 +75,7 @@ class PostRepositorySQLiteImpl: PostRepository {
 
 
     override fun likeById(id: Long, callback: PostRepository.Callback<Post>) {
-        var post: Post = Post(0, "","","",0,0,0,"",false)
+        var post: Post = Post(0, "","", "","",0,0,0,"",false)
         getPost(id, object : PostRepository.CallbackPost<Post>{
             override fun onSuccess(result: Post) {
                 post =  result

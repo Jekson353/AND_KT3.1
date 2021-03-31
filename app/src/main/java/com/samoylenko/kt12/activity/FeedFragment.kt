@@ -46,6 +46,7 @@ class FeedFragment : Fragment() {
                 val bundle = Bundle()
                 bundle.putLong("idPost", post.id)
                 bundle.putString("author", post.author)
+                bundle.putString("authorAvatar", post.authorAvatar)
                 bundle.putString("txtDate", post.published)
                 bundle.putString("content", post.content)
                 bundle.putInt("visability", post.countVisability)

@@ -11,9 +11,12 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.samoylenko.kt12.BuildConfig
 import com.samoylenko.kt12.R
 import com.samoylenko.kt12.databinding.CardPostBinding
 import com.samoylenko.kt12.dto.Post
+import com.samoylenko.kt12.view.load
 import com.samoylenko.kt12.viewmodel.PostViewModel
 
 
@@ -30,6 +33,7 @@ class OnePostFragment : Fragment() {
             Post(
                 id = it,
                 author = arguments?.getString("author")!!,
+                authorAvatar = arguments?.getString("authorAvatar")!!,
                 content = arguments?.getString("content")!!,
                 published = arguments?.getString("txtDate")!!,
                 sharing = arguments?.getInt("share")!!,
@@ -99,8 +103,8 @@ class OnePostFragment : Fragment() {
         }
 
         view?.isVisible = false
-
-        binding.imgAvatar.setImageResource(R.drawable.ic_netology)
+        binding.imgAvatar.load("${BuildConfig.BASE_URL}/avatars/${onePost?.authorAvatar}")
+        //binding.imgAvatar.setImageResource(R.drawable.ic_netology)
         binding.author.text = onePost!!.author
         binding.txtDate.text = onePost.published
         binding.textData.text = onePost.content
@@ -108,7 +112,7 @@ class OnePostFragment : Fragment() {
         binding.like.text = onePost.likes.toString()
         binding.share.text = onePost.sharing.toString()
         binding.like.isChecked = onePost.likedByMe
-        if (!onePost.video.equals("")){
+        if (onePost.video != ""){
             binding.layoutVideo.visibility = View.VISIBLE
             binding.videoViewPlay.text = onePost.video
         }

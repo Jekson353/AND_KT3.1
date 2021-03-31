@@ -3,6 +3,7 @@ package com.samoylenko.kt12.dto
 data class Post(
     var id:Long,
     val author: String,
+    val authorAvatar: String,
     val content: String,
     val published: String,
     val sharing: Int,
