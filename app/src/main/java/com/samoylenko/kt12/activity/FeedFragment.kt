@@ -16,6 +16,7 @@ import com.samoylenko.kt12.adapter.OnInteractionListener
 import com.samoylenko.kt12.adapter.PostAdapter
 import com.samoylenko.kt12.databinding.FragmentFeedBinding
 import com.samoylenko.kt12.dto.Post
+import com.samoylenko.kt12.uimodel.getErrorMessage
 import com.samoylenko.kt12.viewmodel.PostViewModel
 
 
@@ -94,9 +95,10 @@ class FeedFragment : Fragment() {
         binding.listItem.adapter = adapter
         viewModel.data.observe(viewLifecycleOwner, { uimodel ->
             adapter.submitList(uimodel.posts)
-            binding.errorGroup.isVisible = uimodel.error
+            binding.errorGroup.isVisible = uimodel.errorVisible
             binding.emptyText.isVisible = uimodel.empty
             binding.progress.isVisible = uimodel.loading
+            binding.errorText.text = uimodel.error.getErrorMessage(resources)
             binding.ProgressBarLoading.isVisible = uimodel.progressBar
         })
 

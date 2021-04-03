@@ -19,6 +19,7 @@ private val logging = HttpLoggingInterceptor().apply {
 
 private val okhttp = OkHttpClient.Builder()
     .addInterceptor(logging)
+    .addInterceptor(PostInterceptor())
     .build()
 
 private val retrofit = Retrofit.Builder()

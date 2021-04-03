@@ -8,9 +8,9 @@ import androidx.lifecycle.MutableLiveData
 import com.samoylenko.kt12.dto.Post
 import com.samoylenko.kt12.repository.PostRepository
 import com.samoylenko.kt12.repository.PostRepositorySQLiteImpl
+import com.samoylenko.kt12.uimodel.ApiError
 import com.samoylenko.kt12.uimodel.FeedModel
 import com.samoylenko.kt12.util.SingleLiveEvent
-import java.io.IOException
 import java.util.concurrent.Executors
 
 val empty = Post(
@@ -38,6 +38,10 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val postCreated: LiveData<Unit>
         get() = _postCreated
 
+    private val _postCreateError = SingleLiveEvent<ApiError>()
+    val postCreateError: LiveData<ApiError>
+        get() = _postCreateError
+
     private val executorService = Executors.newFixedThreadPool(64)
 
     init {
@@ -54,8 +58,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                     _state.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
                 }
 
-                override fun onFailure(error: Throwable) {
-                    _state.postValue(FeedModel(error = true))
+                override fun onFailure(error: ApiError) {
+                    _state.postValue(FeedModel(errorVisible = true, error = error))
                 }
             }
         )
@@ -81,8 +85,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                             _state.postValue(_state.value?.copy(posts = old, progressBar = false))
                         }
 
-                        override fun onFailure(error: Throwable) {
-                            error.printStackTrace()
+                        override fun onFailure(error: ApiError) {
+                            _state.postValue(FeedModel(errorVisible = true, error = error))
                         }
                     })
                 } else {
@@ -95,15 +99,15 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                             )
                         }
 
-                        override fun onFailure(error: Throwable) {
-                            error.printStackTrace()
+                        override fun onFailure(error: ApiError) {
+                            _state.postValue(FeedModel(errorVisible = true, error = error))
                         }
                     })
                 }
             }
 
-            override fun onFailure(error: Throwable) {
-                error.printStackTrace()
+            override fun onFailure(error: ApiError) {
+                _state.postValue(FeedModel(errorVisible = true, error = error))
             }
         })
     }
@@ -118,8 +122,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 )
             }
 
-            override fun onFailure(error: Throwable) {
-                _state.postValue(FeedModel(error = true))
+            override fun onFailure(error: ApiError) {
+                _state.postValue(FeedModel(errorVisible = true, error = error))
             }
         })
     }
@@ -127,38 +131,35 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun removeById(id: Long) {
         _state.postValue(_state.value?.copy(progressBar = true))
         val old = _state.value?.posts.orEmpty()
-        repository.removeById(id, object : PostRepository.Callback<Unit>{
+        repository.removeById(id, object : PostRepository.Callback<Unit> {
             override fun onSuccess(posts: Unit) {
                 _state.postValue(
-                    _state.value?.copy(posts = _state.value?.posts.orEmpty()
-                        .filter { it.id != id }, progressBar = false
+                    _state.value?.copy(
+                        posts = _state.value?.posts.orEmpty()
+                            .filter { it.id != id }, progressBar = false
                     )
                 )
             }
 
-            override fun onFailure(error: Throwable) {
-                _state.postValue(_state.value?.copy(posts = old, progressBar = false))
+            override fun onFailure(error: ApiError) {
+                _state.postValue(_state.value?.copy(posts = old, progressBar = false, error = error))
             }
         })
     }
 
     fun save() {
         edited.value?.let {
-            repository.save(
-                it,
-                object : PostRepository.Callback<List<Post>> {
-                    override fun onSuccess(posts: List<Post>) {
-                        _state.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
-                    }
+            repository.save(it, object : PostRepository.Callback<Post>{
+                override fun onSuccess(posts: Post) {
+                    _postCreated.value = Unit
+                    edited.value = empty
+                }
 
-                    override fun onFailure(error: Throwable) {
-                        _state.postValue(FeedModel(error = true))
-                    }
-                },
-            )
-            _postCreated.value = Unit
+                override fun onFailure(error: ApiError) {
+                    _postCreateError.value = error
+                }
+            })
         }
-        edited.value = empty
     }
 
     fun changeContent(content: String, video: String) {

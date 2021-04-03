@@ -11,7 +11,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
 import com.samoylenko.kt12.BuildConfig
 import com.samoylenko.kt12.R
 import com.samoylenko.kt12.databinding.CardPostBinding
@@ -104,7 +103,6 @@ class OnePostFragment : Fragment() {
 
         view?.isVisible = false
         binding.imgAvatar.load("${BuildConfig.BASE_URL}/avatars/${onePost?.authorAvatar}")
-        //binding.imgAvatar.setImageResource(R.drawable.ic_netology)
         binding.author.text = onePost!!.author
         binding.txtDate.text = onePost.published
         binding.textData.text = onePost.content
