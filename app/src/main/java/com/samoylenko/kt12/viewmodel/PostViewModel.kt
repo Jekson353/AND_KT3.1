@@ -122,7 +122,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 _state.postValue(FeedModel(error = true))
             }
         })
-        //executorService.execute { repository.shareById(id) }
     }
 
     fun removeById(id: Long) {
