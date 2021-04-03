@@ -18,6 +18,16 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/ProgressBarLoading"
+        android:layout_width="match_parent"
+        android:layout_height="24sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:indeterminate="true" />
+
     <TextView
         android:id="@+id/emptyText"
         android:text="Список пустой"

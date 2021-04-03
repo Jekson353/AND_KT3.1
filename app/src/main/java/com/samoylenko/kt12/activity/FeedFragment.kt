@@ -97,7 +97,7 @@ class FeedFragment : Fragment() {
             binding.errorGroup.isVisible = uimodel.error
             binding.emptyText.isVisible = uimodel.empty
             binding.progress.isVisible = uimodel.loading
-
+            binding.ProgressBarLoading.isVisible = uimodel.progressBar
         })
 
         binding.addPostButton.setOnClickListener {
