@@ -142,7 +142,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                     _state.postValue(FeedModel(progressBar = false))
                     edited.value = empty
                 }catch (e: IOException){
-                    _state.postValue(FeedModel(progressBar = false, error = ApiError.fromThrowable(e)))
+                    _postCreateError.value = ApiError.fromThrowable(e)
+                    //_state.postValue(FeedModel(progressBar = false, error = ApiError.fromThrowable(e)))
                 }
             }
 
