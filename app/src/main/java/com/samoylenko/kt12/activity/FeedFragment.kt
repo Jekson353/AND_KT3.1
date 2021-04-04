@@ -94,13 +94,14 @@ class FeedFragment : Fragment() {
 
         binding.listItem.adapter = adapter
         viewModel.data.observe(viewLifecycleOwner, { uimodel ->
-            adapter.submitList(uimodel.posts)
             binding.errorGroup.isVisible = uimodel.errorVisible
             binding.emptyText.isVisible = uimodel.empty
             binding.progress.isVisible = uimodel.loading
             binding.errorText.text = uimodel.error.getErrorMessage(resources)
             binding.ProgressBarLoading.isVisible = uimodel.progressBar
         })
+
+        viewModel.posts.observe(viewLifecycleOwner, adapter::submitList)
 
         binding.addPostButton.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_postFragment)

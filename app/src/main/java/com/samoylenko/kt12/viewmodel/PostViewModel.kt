@@ -5,12 +5,16 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.samoylenko.kt12.db.AppDb
 import com.samoylenko.kt12.dto.Post
 import com.samoylenko.kt12.repository.PostRepository
 import com.samoylenko.kt12.repository.PostRepositorySQLiteImpl
 import com.samoylenko.kt12.uimodel.ApiError
 import com.samoylenko.kt12.uimodel.FeedModel
 import com.samoylenko.kt12.util.SingleLiveEvent
+import kotlinx.coroutines.launch
+import java.io.IOException
 import java.util.concurrent.Executors
 
 val empty = Post(
@@ -27,7 +31,13 @@ val empty = Post(
 )
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: PostRepository = PostRepositorySQLiteImpl()
+    private val repository: PostRepository = PostRepositorySQLiteImpl(
+        AppDb.getInstance(application).postDao
+    )
+
+    val posts: LiveData<List<Post>>
+            get() = repository.posts
+
     private val _state = MutableLiveData(FeedModel())
     val data: LiveData<FeedModel>
         get() = _state
@@ -49,116 +59,86 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getPosts() {
-        // Начинаем загрузку
-        _state.postValue(FeedModel(loading = true))
-        // Данные успешно получены
-        repository.getAll(
-            object : PostRepository.Callback<List<Post>> {
-                override fun onSuccess(posts: List<Post>) {
-                    _state.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
-                }
-
-                override fun onFailure(error: ApiError) {
-                    _state.postValue(FeedModel(errorVisible = true, error = error))
-                }
+        viewModelScope.launch {
+            // Начинаем загрузку
+            _state.postValue(FeedModel(loading = true))
+            // Данные успешно получены
+            try {
+                val posts = repository.getAll()
+                _state.postValue(FeedModel(empty = posts.isEmpty()))
+            }catch (e: IOException){
+                _state.postValue(FeedModel(errorVisible = true, error = ApiError.fromThrowable(e)))
             }
-        )
+
+
+        }
     }
 
     fun likeById(id: Long) {
-        _state.postValue(_state.value?.copy(progressBar = true))
-        repository.getPost(id, object : PostRepository.CallbackPost<Post> {
-            override fun onSuccess(result: Post) {
-                val i: Long = 0
-                if (result.id == i) {
-                    Toast.makeText(
-                        getApplication(),
-                        "Нечего лайкать",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else if (result.likedByMe) {
-                    repository.dislikeById(id, object : PostRepository.CallbackPost<Post> {
-                        override fun onSuccess(result: Post) {
-                            val old: MutableList<Post> = _state.value?.posts.orEmpty().toMutableList()
-
-                            old.forEachIndexed { index, post -> post.takeIf { it.id == result.id }?.let { old[index] = it.copy(likes = result.likes, likedByMe = result.likedByMe) } }
-                            _state.postValue(_state.value?.copy(posts = old, progressBar = false))
+        viewModelScope.launch {
+            _state.postValue(_state.value?.copy(progressBar = true))
+            val i: Long = 0
+            try {
+                repository.getPost(id).let {post: Post ->
+                    if (post.id== i){
+                        Toast.makeText(
+                            getApplication(),
+                            "Нечего лайкать",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }else if (post.likedByMe){
+                        try {
+                            repository.dislikeById(post.id)
+                            _state.postValue(_state.value?.copy(progressBar = false))
+                        }catch (e: IOException){
+                            _state.postValue(FeedModel(progressBar = false, errorVisible = true, error = ApiError.fromThrowable(e)))
+                        }
+                    }else{
+                        try {
+                            repository.likeById(post.id)
+                            _state.postValue(_state.value?.copy(progressBar = false))
+                        }catch (e: IOException){
+                            _state.postValue(FeedModel(progressBar = false, errorVisible = true, error = ApiError.fromThrowable(e)))
                         }
 
-                        override fun onFailure(error: ApiError) {
-                            _state.postValue(FeedModel(errorVisible = true, error = error))
-                        }
-                    })
-                } else {
-                    repository.likeById(id, object : PostRepository.CallbackPost<Post> {
-                        override fun onSuccess(result: Post) {
-                            val old: MutableList<Post> = _state.value?.posts.orEmpty().toMutableList()
-                            old.forEachIndexed { index, post -> post.takeIf { it.id == result.id }?.let { old[index] = it.copy(likes = result.likes, likedByMe = result.likedByMe) } }
-                            _state.postValue(
-                                _state.value?.copy(posts = old, progressBar = false)
-                            )
-                        }
-
-                        override fun onFailure(error: ApiError) {
-                            _state.postValue(FeedModel(errorVisible = true, error = error))
-                        }
-                    })
+                    }
                 }
+            }catch (e: IOException){
+                _state.postValue(FeedModel(progressBar = false, errorVisible = true, error = ApiError.fromThrowable(e)))
             }
-
-            override fun onFailure(error: ApiError) {
-                _state.postValue(FeedModel(errorVisible = true, error = error))
-            }
-        })
+        }
     }
 
     fun shareById(id: Long) {
-        repository.shareById(id, object : PostRepository.CallbackPost<Post>{
-            override fun onSuccess(result: Post) {
-                val old: MutableList<Post> = _state.value?.posts.orEmpty().toMutableList()
-                old.forEachIndexed { index, post -> post.takeIf { it.id == result.id }?.let { old[index] = it.copy(sharing = result.sharing) } }
-                _state.postValue(
-                    _state.value?.copy(posts = old)
-                )
+        viewModelScope.launch {
+            try {
+                repository.shareById(id)
+            }catch (e: IOException){
+                _state.postValue(FeedModel(progressBar = false, errorVisible = true, error = ApiError.fromThrowable(e)))
             }
-
-            override fun onFailure(error: ApiError) {
-                _state.postValue(FeedModel(errorVisible = true, error = error))
-            }
-        })
+        }
     }
 
     fun removeById(id: Long) {
-        _state.postValue(_state.value?.copy(progressBar = true))
-        val old = _state.value?.posts.orEmpty()
-        repository.removeById(id, object : PostRepository.Callback<Unit> {
-            override fun onSuccess(posts: Unit) {
-                _state.postValue(
-                    _state.value?.copy(
-                        posts = _state.value?.posts.orEmpty()
-                            .filter { it.id != id }, progressBar = false
-                    )
-                )
+        viewModelScope.launch {
+            _state.postValue(_state.value?.copy(progressBar = true))
+            try {
+                repository.removeById(id)
+                _state.postValue(FeedModel(progressBar = false))
+            }catch (e: IOException){
+                _state.postValue(FeedModel(progressBar = false))
+                getPosts()
             }
-
-            override fun onFailure(error: ApiError) {
-                _state.postValue(_state.value?.copy(posts = old, progressBar = false, error = error))
-            }
-        })
+        }
     }
 
     fun save() {
-        edited.value?.let {
-            repository.save(it, object : PostRepository.Callback<Post>{
-                override fun onSuccess(posts: Post) {
-                    _postCreated.value = Unit
-                    edited.value = empty
-                }
-
-                override fun onFailure(error: ApiError) {
-                    _postCreateError.value = error
-                }
-            })
+        viewModelScope.launch {
+            edited.value?.let {
+                repository.save(it)
+                _postCreated.value = Unit
+            }
+            edited.value = empty
         }
     }
 

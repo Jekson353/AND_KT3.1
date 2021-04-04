@@ -7,13 +7,11 @@ import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.samoylenko.kt12.BuildConfig
 import com.samoylenko.kt12.R
 import com.samoylenko.kt12.databinding.CardPostBinding
 import com.samoylenko.kt12.dto.Post
 import com.samoylenko.kt12.util.Calc
-import com.samoylenko.kt12.view.load
 import com.samoylenko.kt12.view.loadCircleCrop
 
 interface OnInteractionListener {

@@ -1,13 +1,21 @@
 package com.samoylenko.kt12.repository
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.map
 import com.samoylenko.kt12.api.PostsApi
+import com.samoylenko.kt12.dao.PostDao
 import com.samoylenko.kt12.dto.Post
-import com.samoylenko.kt12.uimodel.ApiError
+import com.samoylenko.kt12.entity.PostEntity
+import com.samoylenko.kt12.entity.toPost
 import okhttp3.*
 import java.util.concurrent.TimeUnit
 
 
-class PostRepositorySQLiteImpl: PostRepository {
+class PostRepositorySQLiteImpl(private val dao: PostDao): PostRepository {
+
+    override val posts: LiveData<List<Post>>
+        get() = dao.getAll().map { it.map(PostEntity::toPost) }
+
     private val client = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
         .build()
@@ -25,96 +33,46 @@ class PostRepositorySQLiteImpl: PostRepository {
         likedByMe = false
     )
 
-    override fun getAll(callback: PostRepository.Callback<List<Post>>) {
-        PostsApi.retrofitService.getAll()
-            .enqueue(object : retrofit2.Callback<List<Post>> {
-                override fun onResponse(call: retrofit2.Call<List<Post>>, response: retrofit2.Response<List<Post>>) {
-                    callback.onSuccess(response.body().orEmpty())
-                }
-
-                override fun onFailure(call: retrofit2.Call<List<Post>>, t: Throwable) {
-                    callback.onFailure(ApiError.fromThrowable(t))
-                }
-            })
+    override suspend fun getAll(): List<Post> {
+        val networkPosts = PostsApi.retrofitService.getAll()
+            dao.insertPost(networkPosts.map(PostEntity.Companion::fromPost))
+        return networkPosts
     }
 
-
-    override fun getPost(id: Long, callback: PostRepository.CallbackPost<Post>) {
-        PostsApi.retrofitService.getById(id)
-            .enqueue(object : retrofit2.Callback<Post> {
-                override fun onResponse( call: retrofit2.Call<Post>, response: retrofit2.Response<Post>) {
-                        callback.onSuccess(response.body() ?: emptyPost)
-                }
-
-                override fun onFailure(call: retrofit2.Call<Post>, t: Throwable) {
-                    callback.onFailure(ApiError.fromThrowable(t))
-                }
-            })
+    override suspend fun getPost(id: Long): Post {
+        return PostsApi.retrofitService.getById(id)
     }
 
-    override fun dislikeById(id: Long, callback: PostRepository.CallbackPost<Post>) {
-        PostsApi.retrofitService.dislikeById(id)
-            .enqueue(object : retrofit2.Callback<Post> {
-                override fun onResponse(call: retrofit2.Call<Post>, response: retrofit2.Response<Post> ) {
-                        callback.onSuccess(response.body() ?: emptyPost)
-                }
+    override suspend fun dislikeById(id: Long): Post {
+        val postDislike = PostsApi.retrofitService.dislikeById(id)
 
-                override fun onFailure(call: retrofit2.Call<Post>, t: Throwable) {
-                    callback.onFailure(ApiError.fromThrowable(t))
-                }
-            })
+        postDislike.let {
+            dao.dislikesById(id)
+        }
+
+        return postDislike
     }
 
-    override fun likeById(id: Long, callback: PostRepository.CallbackPost<Post>) {
-        PostsApi.retrofitService.likeById(id)
-            .enqueue(object : retrofit2.Callback<Post> {
-                override fun onResponse(call: retrofit2.Call<Post>, response: retrofit2.Response<Post>) {
-                        callback.onSuccess(response.body() ?: emptyPost)
-                }
+    override suspend fun likeById(id: Long): Post {
+        val postLike = PostsApi.retrofitService.likeById(id)
 
-                override fun onFailure(call: retrofit2.Call<Post>, t: Throwable) {
-                    callback.onFailure(ApiError.fromThrowable(t))
-                }
-            })
+        postLike.let {
+            dao.likesById(it.id)
+        }
+        return postLike
     }
 
-    override fun shareById(id: Long, callback: PostRepository.CallbackPost<Post>) {
+    override suspend fun shareById(id: Long) {
         PostsApi.retrofitService.shareById(id)
-            .enqueue(object : retrofit2.Callback<Post> {
-                override fun onResponse(call: retrofit2.Call<Post>, response: retrofit2.Response<Post>) {
-                        callback.onSuccess(response.body() ?: emptyPost)
-                }
-
-                override fun onFailure(call: retrofit2.Call<Post>, t: Throwable) {
-                    callback.onFailure(ApiError.fromThrowable(t))
-                }
-            })
+        dao.shareById(id)
     }
 
-    override fun save(post: Post, callback: PostRepository.Callback<Post>) {
+    override suspend fun save(post: Post) {
         PostsApi.retrofitService.save(post)
-            .enqueue(object : retrofit2.Callback<Post>{
-                override fun onResponse(call: retrofit2.Call<Post>, response: retrofit2.Response<Post>) {
-                    callback.onSuccess(response.body() ?: throw java.lang.RuntimeException("body is null"))
-                }
-
-                override fun onFailure(call: retrofit2.Call<Post>, t: Throwable) {
-                    callback.onFailure(ApiError.fromThrowable(t))
-                }
-            })
     }
 
-    override fun removeById(id: Long, callback: PostRepository.Callback<Unit>) {
-        PostsApi.retrofitService.removeById(id).enqueue(
-            object : retrofit2.Callback<Unit>{
-                override fun onResponse(call: retrofit2.Call<Unit>, response: retrofit2.Response<Unit>) {
-                        response.body()?.let { callback.onSuccess(it) }
-                }
-
-                override fun onFailure(call: retrofit2.Call<Unit>, t: Throwable) {
-                    callback.onFailure(ApiError.fromThrowable(t))
-                }
-            }
-        )
+    override suspend fun removeById(id: Long) {
+        PostsApi.retrofitService.removeById(id)
+        dao.removeById(id)
     }
 }
