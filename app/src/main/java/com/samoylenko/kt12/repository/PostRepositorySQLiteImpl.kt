@@ -68,7 +68,8 @@ class PostRepositorySQLiteImpl(private val dao: PostDao): PostRepository {
     }
 
     override suspend fun save(post: Post) {
-        PostsApi.retrofitService.save(post)
+        val localPosts = PostsApi.retrofitService.save(post)
+        dao.save(PostEntity.fromPost(localPosts))
     }
 
     override suspend fun removeById(id: Long) {

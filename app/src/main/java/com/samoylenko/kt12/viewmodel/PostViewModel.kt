@@ -134,11 +134,18 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun save() {
         viewModelScope.launch {
+            _state.postValue(_state.value?.copy(progressBar = true))
             edited.value?.let {
-                repository.save(it)
-                _postCreated.value = Unit
+                try {
+                    repository.save(it)
+                    _postCreated.value = Unit
+                    _state.postValue(FeedModel(progressBar = false))
+                    edited.value = empty
+                }catch (e: IOException){
+                    _state.postValue(FeedModel(progressBar = false, error = ApiError.fromThrowable(e)))
+                }
             }
-            edited.value = empty
+
         }
     }
 
