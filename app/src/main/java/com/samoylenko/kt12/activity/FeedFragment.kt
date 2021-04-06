@@ -11,6 +11,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.samoylenko.kt12.R
 import com.samoylenko.kt12.adapter.OnInteractionListener
 import com.samoylenko.kt12.adapter.PostAdapter
@@ -93,15 +94,20 @@ class FeedFragment : Fragment() {
         })
 
         binding.listItem.adapter = adapter
+
         viewModel.data.observe(viewLifecycleOwner, { uimodel ->
             binding.errorGroup.isVisible = uimodel.errorVisible
             binding.emptyText.isVisible = uimodel.empty
             binding.progress.isVisible = uimodel.loading
             binding.errorText.text = uimodel.error.getErrorMessage(resources)
             binding.ProgressBarLoading.isVisible = uimodel.progressBar
+
         })
 
-        viewModel.posts.observe(viewLifecycleOwner, adapter::submitList)
+        viewModel.posts.observe(viewLifecycleOwner, {
+            adapter.submitList(it)
+            binding.listItem.smoothScrollToPosition(0)
+        })
 
         binding.addPostButton.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_postFragment)
@@ -121,6 +127,17 @@ class FeedFragment : Fragment() {
             findNavController().navigate(R.id.action_feedFragment_to_postFragment, bundle)
         })
 
+        viewModel.newPosts.observe(viewLifecycleOwner){count ->
+            if (count>0){
+                view?.let {
+                    Snackbar.make(it, "Доступно новых записей: $count", Snackbar.LENGTH_LONG)
+                        .setAction("ПОКАЗАТЬ") {
+                            viewModel.getPosts()
+                        }
+                        .show()
+                }
+            }
+        }
 
         return binding.root
     }

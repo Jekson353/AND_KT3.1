@@ -1,10 +1,11 @@
 package com.samoylenko.kt12.repository
 
-import androidx.lifecycle.LiveData
 import com.samoylenko.kt12.dto.Post
+import kotlinx.coroutines.flow.Flow
 
 interface PostRepository {
-    val posts: LiveData<List<Post>>
+    val posts: Flow<List<Post>>
+    fun getNewerCount(id: Long) : Flow<Int>
     suspend fun getAll(): List<Post>
     suspend fun likeById(id: Long): Post
     suspend fun dislikeById(id: Long): Post

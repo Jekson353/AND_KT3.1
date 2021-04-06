@@ -1,37 +1,20 @@
 package com.samoylenko.kt12.repository
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.map
 import com.samoylenko.kt12.api.PostsApi
 import com.samoylenko.kt12.dao.PostDao
 import com.samoylenko.kt12.dto.Post
 import com.samoylenko.kt12.entity.PostEntity
 import com.samoylenko.kt12.entity.toPost
-import okhttp3.*
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 
 
 class PostRepositorySQLiteImpl(private val dao: PostDao): PostRepository {
 
-    override val posts: LiveData<List<Post>>
-        get() = dao.getAll().map { it.map(PostEntity::toPost) }
-
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .build()
-
-    val emptyPost = Post(
-        id = 0,
-        author = "Локальное сохранение",
-        authorAvatar = "",
-        content = "",
-        published = "",
-        sharing = 0,
-        likes = 0,
-        countVisability = 0,
-        video = "",
-        likedByMe = false
-    )
+    override val posts: Flow<List<Post>>
+        get() = dao.getAll()
+            .map { it.map(PostEntity::toPost) }
+            .flowOn(Dispatchers.Default)
 
     override suspend fun getAll(): List<Post> {
         val networkPosts = PostsApi.retrofitService.getAll()
@@ -76,4 +59,13 @@ class PostRepositorySQLiteImpl(private val dao: PostDao): PostRepository {
         PostsApi.retrofitService.removeById(id)
         dao.removeById(id)
     }
+
+    override fun getNewerCount(id: Long): Flow<Int> = flow {
+            while (true){
+                val newer = PostsApi.retrofitService.getNewer(id)
+                emit(newer.size)
+            }
+        }.catch {
+            emit(0)
+        }
 }

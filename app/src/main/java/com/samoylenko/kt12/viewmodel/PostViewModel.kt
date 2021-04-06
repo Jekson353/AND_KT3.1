@@ -2,10 +2,7 @@ package com.samoylenko.kt12.viewmodel
 
 import android.app.Application
 import android.widget.Toast
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.samoylenko.kt12.db.AppDb
 import com.samoylenko.kt12.dto.Post
 import com.samoylenko.kt12.repository.PostRepository
@@ -13,9 +10,9 @@ import com.samoylenko.kt12.repository.PostRepositorySQLiteImpl
 import com.samoylenko.kt12.uimodel.ApiError
 import com.samoylenko.kt12.uimodel.FeedModel
 import com.samoylenko.kt12.util.SingleLiveEvent
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import java.io.IOException
-import java.util.concurrent.Executors
 
 val empty = Post(
     id = 0,
@@ -36,7 +33,13 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     )
 
     val posts: LiveData<List<Post>>
-            get() = repository.posts
+            get() = repository.posts.asLiveData()
+
+    val newPosts = posts.switchMap {
+        repository.getNewerCount(it.size.toLong())
+            .catch { e->e.printStackTrace() }
+            .asLiveData()
+    }
 
     private val _state = MutableLiveData(FeedModel())
     val data: LiveData<FeedModel>
@@ -51,8 +54,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val _postCreateError = SingleLiveEvent<ApiError>()
     val postCreateError: LiveData<ApiError>
         get() = _postCreateError
-
-    private val executorService = Executors.newFixedThreadPool(64)
 
     init {
         getPosts()
@@ -69,8 +70,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             }catch (e: IOException){
                 _state.postValue(FeedModel(errorVisible = true, error = ApiError.fromThrowable(e)))
             }
-
-
         }
     }
 
@@ -164,9 +163,5 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun edit(post: Post) {
         edited.value = post
-    }
-
-    override fun onCleared() {
-        executorService.shutdown()
     }
 }

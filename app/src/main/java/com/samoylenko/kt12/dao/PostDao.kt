@@ -1,13 +1,13 @@
 package com.samoylenko.kt12.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.samoylenko.kt12.entity.PostEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PostDao {
     @Query("SELECT * FROM PostEntity ORDER BY id DESC")
-    fun getAll(): LiveData<List<PostEntity>>
+    fun getAll(): Flow<List<PostEntity>>
 
     @Query("""
                 UPDATE PostEntity SET
