@@ -18,4 +18,7 @@
     <string name="msg_token_fmt">Token: %1$s</string>
     <string name="chanel_remote_name">Chanel</string>
     <string name="chanel_remote_description">Description</string>
+    <string name="description_select_photo">Select photo</string>
+    <string name="description_take_photo">Take photo</string>
+    <string name="description_photo">Photo</string>
 </resources>

@@ -12,6 +12,7 @@ import com.samoylenko.kt12.R
 import com.samoylenko.kt12.databinding.CardPostBinding
 import com.samoylenko.kt12.dto.Post
 import com.samoylenko.kt12.util.Calc
+import com.samoylenko.kt12.view.load
 import com.samoylenko.kt12.view.loadCircleCrop
 
 interface OnInteractionListener {
@@ -63,9 +64,12 @@ class PostViewHolder(
             like.text = Calc.intToText(post.likes)
             share.text = post.sharing.toString()
             like.isChecked = post.likedByMe
-            if (post.video != "") {
-                layoutVideo.visibility = View.VISIBLE
-                videoViewPlay.text = post.video
+            post.attachment?.url.let {
+                if (!it.isNullOrEmpty()){
+                    imageViewPlay.load("${BuildConfig.BASE_URL}/media/${post.attachment?.url}").let {
+                        layoutPhoto.visibility = View.VISIBLE
+                    }
+                }
             }
 
             like.setOnClickListener {
@@ -93,7 +97,7 @@ class PostViewHolder(
                     }
                 }.show()
             }
-            videoViewPlay.setOnClickListener {
+            imageViewPlay.setOnClickListener {
                 onInteractionListener.playVideo(post)
             }
 

@@ -1,21 +1,22 @@
 package com.samoylenko.kt12.api
 
-import com.samoylenko.kt12.BuildConfig
+import com.samoylenko.kt12.api.PostsApi.BASE_URL
+import com.samoylenko.kt12.dto.Media
 import com.samoylenko.kt12.dto.Post
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 
-private const val BASE_URL = "${BuildConfig.BASE_URL}/api/slow/"
+
 
 private val logging = HttpLoggingInterceptor().apply {
-    if (BuildConfig.DEBUG) {
+    //if (BuildConfig.DEBUG) {
         level = HttpLoggingInterceptor.Level.BODY
-    }
+    //}
 }
 
 private val okhttp = OkHttpClient.Builder()
@@ -53,10 +54,16 @@ interface PostsApiService {
 
     @GET("posts/{id}/newer")
     suspend fun getNewer(@Path("id") id: Long): List<Post>
+
+    @Multipart
+    @POST("media")
+    suspend fun upload(@Part media: MultipartBody.Part): Media
 }
 
 object PostsApi {
     val retrofitService: PostsApiService by lazy {
         retrofit.create(PostsApiService::class.java)
     }
+    const val BASE_URL = "http://10.0.2.2:9999/api/slow/"
+    const val MEDIA_URL = "http://10.0.2.2:9999/"
 }

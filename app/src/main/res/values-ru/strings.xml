@@ -17,6 +17,9 @@
     <string name="text_enter_video">Введите ссылку на видео</string>
     <string name="notification_user_liked">%1$s поставил лайк посту %2$s</string>
     <string name="msg_token_fmt">Token: %1$s</string>
-    <string name="chanel_remote_name">Chanel</string>
-    <string name="chanel_remote_description">Description</string>
+    <string name="chanel_remote_name">Уведомления с сервера</string>
+    <string name="chanel_remote_description">Уведомления с удалённого сервера</string>
+    <string name="description_select_photo">Выбрать фото</string>
+    <string name="description_take_photo">Сделать фото</string>
+    <string name="description_photo">Фото</string>
 </resources>

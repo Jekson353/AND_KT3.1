@@ -1,6 +1,7 @@
-package com.samoylenko.kt12.uimodel
+package com.samoylenko.kt12.error
 
 import android.content.res.Resources
+import com.samoylenko.kt12.uimodel.ApiException
 import java.net.ConnectException
 
 sealed class ApiError {

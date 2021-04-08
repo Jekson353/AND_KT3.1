@@ -76,9 +76,9 @@
         tools:text="@sample/test_data.json/data/content" />
 
     <FrameLayout
-        android:id="@+id/layoutVideo"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/layoutPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/barrier_end"
@@ -86,23 +86,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_Data">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/videoViewPlay"
-            android:layout_width="150sp"
-            android:layout_height="150sp"
-            android:layout_margin="16dp"
-            android:layout_gravity="center"
-            android:background="@drawable/video_icon"
-            android:foreground="@drawable/video_icon" />
-
         <ImageView
             android:id="@+id/imageViewPlay"
-            android:layout_width="24sp"
-            android:layout_height="24sp"
-            android:elevation="4dp"
-            android:layout_gravity="center"
-            app:srcCompat="@drawable/ic_play_24" />
-
+            android:layout_width="250sp"
+            android:layout_height="250sp"
+            android:layout_gravity="center"/>
     </FrameLayout>
 
 
@@ -111,7 +99,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
-        app:constraint_referenced_ids="layoutVideo"
+        app:constraint_referenced_ids="layoutPhoto"
         tools:layout_editor_absoluteY="230dp" />
 
     <com.google.android.material.button.MaterialButton

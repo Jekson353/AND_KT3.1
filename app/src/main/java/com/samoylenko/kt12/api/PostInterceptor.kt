@@ -1,6 +1,6 @@
 package com.samoylenko.kt12.api
 
-import com.samoylenko.kt12.uimodel.ApiError
+import com.samoylenko.kt12.error.ApiError
 import com.samoylenko.kt12.uimodel.ApiException
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -12,7 +12,8 @@ class PostInterceptor : Interceptor {
             .let {response ->
                 when{
                     response.isSuccessful -> response
-                    response.code == HttpURLConnection.HTTP_INTERNAL_ERROR -> throw ApiException(ApiError.ServerError)
+                    response.code == HttpURLConnection.HTTP_INTERNAL_ERROR -> throw ApiException(
+                        ApiError.ServerError)
                     else -> throw ApiException(ApiError.UnknownError)
                 }
             }

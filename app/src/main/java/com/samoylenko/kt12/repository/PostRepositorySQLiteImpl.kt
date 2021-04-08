@@ -2,11 +2,18 @@ package com.samoylenko.kt12.repository
 
 import com.samoylenko.kt12.api.PostsApi
 import com.samoylenko.kt12.dao.PostDao
+import com.samoylenko.kt12.dto.Attachment
+import com.samoylenko.kt12.dto.Media
+import com.samoylenko.kt12.dto.MediaUpload
 import com.samoylenko.kt12.dto.Post
 import com.samoylenko.kt12.entity.PostEntity
 import com.samoylenko.kt12.entity.toPost
+import com.samoylenko.kt12.enumeration.AttachmentType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.IOException
 
 
 class PostRepositorySQLiteImpl(private val dao: PostDao): PostRepository {
@@ -68,4 +75,18 @@ class PostRepositorySQLiteImpl(private val dao: PostDao): PostRepository {
         }.catch {
             emit(0)
         }
+
+    override suspend fun saveWithAttachment(post: Post, upload: MediaUpload) {
+            val media = upload(upload)
+            // TODO: add support for other types
+            val postWithAttachment = post.copy(attachment = Attachment(media.id, AttachmentType.IMAGE))
+            save(postWithAttachment)
+    }
+
+    override suspend fun upload(upload: MediaUpload): Media {
+            val media = MultipartBody.Part.createFormData(
+                "file", upload.file.name, upload.file.asRequestBody()
+            )
+            return PostsApi.retrofitService.upload(media)
+    }
 }

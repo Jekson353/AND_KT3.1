@@ -13,6 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.samoylenko.kt12.BuildConfig
 import com.samoylenko.kt12.R
+import com.samoylenko.kt12.api.PostsApi
 import com.samoylenko.kt12.databinding.CardPostBinding
 import com.samoylenko.kt12.dto.Post
 import com.samoylenko.kt12.view.load
@@ -21,31 +22,19 @@ import com.samoylenko.kt12.viewmodel.PostViewModel
 
 class OnePostFragment : Fragment() {
     private val viewModel: PostViewModel by viewModels(ownerProducer = { requireActivity() })
+    var post: Post? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val binding = CardPostBinding.inflate(inflater, container, false)
-        val postId = arguments?.getLong("idPost")
-        val onePost: Post? = postId?.let {
-            Post(
-                id = it,
-                author = arguments?.getString("author")!!,
-                authorAvatar = arguments?.getString("authorAvatar")!!,
-                content = arguments?.getString("content")!!,
-                published = arguments?.getString("txtDate")!!,
-                sharing = arguments?.getInt("share")!!,
-                likes = arguments?.getInt("likes")!!,
-                countVisability = arguments?.getInt("visability")!!,
-                video = arguments?.getString("video")!!,
-                likedByMe = arguments?.getBoolean("likedByMe")!!
-            )
-        }
+        val onePost: Post? = arguments?.getSerializable("post") as? Post
+        post = onePost
 
         binding.like.setOnClickListener {
-            if (postId != null) {
-                viewModel.likeById(postId)
+            onePost?.id?.let {
+                viewModel.likeById(it)
             }
         }
 
@@ -55,8 +44,8 @@ class OnePostFragment : Fragment() {
                 setOnMenuItemClickListener { itemView ->
                     when (itemView.itemId) {
                         R.id.deleteView -> {
-                            if (postId != null) {
-                                viewModel.removeById(postId)
+                            onePost?.id?.let{
+                                viewModel.removeById(it)
                                 findNavController().navigateUp()
                             }
                             true
@@ -65,9 +54,7 @@ class OnePostFragment : Fragment() {
                             if (onePost != null) {
                                 viewModel.edit(onePost)
                                 val bundle = Bundle()
-                                bundle.putString("textPost", onePost.content)
-                                bundle.putString("urlVideo", onePost.video)
-                                bundle.putString("owner", "onePost")
+                                bundle.putSerializable("post", post)
                                 findNavController().navigate(
                                     R.id.action_onePostFragment_to_postFragment,
                                     bundle
@@ -93,8 +80,8 @@ class OnePostFragment : Fragment() {
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
-                        if (postId != null) {
-                            viewModel.shareById(postId)
+                        onePost?.id?.let {
+                            viewModel.shareById(it)
                         }
                         startActivity(it)
                     }
@@ -102,7 +89,7 @@ class OnePostFragment : Fragment() {
         }
 
         view?.isVisible = false
-        binding.imgAvatar.load("${BuildConfig.BASE_URL}/avatars/${onePost?.authorAvatar}")
+        binding.imgAvatar.load("${PostsApi.BASE_URL}/avatars/${onePost?.authorAvatar}")
         binding.author.text = onePost!!.author
         binding.txtDate.text = onePost.published
         binding.textData.text = onePost.content
@@ -110,9 +97,12 @@ class OnePostFragment : Fragment() {
         binding.like.text = onePost.likes.toString()
         binding.share.text = onePost.sharing.toString()
         binding.like.isChecked = onePost.likedByMe
-        if (onePost.video != ""){
-            binding.layoutVideo.visibility = View.VISIBLE
-            binding.videoViewPlay.text = onePost.video
+        onePost.attachment?.url.let {
+            if (!it.isNullOrEmpty()){
+                binding.imageViewPlay.load("${BuildConfig.BASE_URL}/media/${onePost.attachment?.url}").let {
+                    binding.layoutPhoto.visibility = View.VISIBLE
+                }
+            }
         }
 
         return binding.root

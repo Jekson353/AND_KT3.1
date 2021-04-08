@@ -17,7 +17,7 @@ import com.samoylenko.kt12.adapter.OnInteractionListener
 import com.samoylenko.kt12.adapter.PostAdapter
 import com.samoylenko.kt12.databinding.FragmentFeedBinding
 import com.samoylenko.kt12.dto.Post
-import com.samoylenko.kt12.uimodel.getErrorMessage
+import com.samoylenko.kt12.error.getErrorMessage
 import com.samoylenko.kt12.viewmodel.PostViewModel
 
 
@@ -46,32 +46,16 @@ class FeedFragment : Fragment() {
 
             override fun onClickPost(post: Post) {
                 val bundle = Bundle()
-                bundle.putLong("idPost", post.id)
-                bundle.putString("author", post.author)
-                bundle.putString("authorAvatar", post.authorAvatar)
-                bundle.putString("txtDate", post.published)
-                bundle.putString("content", post.content)
-                bundle.putInt("visability", post.countVisability)
-                bundle.putInt("likes", post.likes)
-                bundle.putInt("share", post.sharing)
-                bundle.putString("video", post.video)
-                bundle.putBoolean("likedByMe", post.likedByMe)
+                bundle.putSerializable("post", post)
                 findNavController().navigate(R.id.action_feedFragment_to_onePostFragment, bundle)
             }
 
             override fun playVideo(post: Post) {
-                Intent(Intent.ACTION_VIEW, Uri.parse(post.video))
-                    .also {
-                        if (it.resolveActivity(requireActivity().packageManager) == null) {
-                            Toast.makeText(
-                                requireActivity(),
-                                "Нет приложений для просмотра видео",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            startActivity(it)
-                        }
-                    }
+                post.attachment?.url.let {
+                    val bundle = Bundle()
+                    bundle.putSerializable("picture", it)
+                    findNavController().navigate(R.id.action_feedFragment_to_pictureFragment, bundle)
+                }
             }
 
             override fun onShare(post: Post) {
@@ -122,10 +106,13 @@ class FeedFragment : Fragment() {
                 return@observe
             }
             val bundle = Bundle()
-            bundle.putString("textPost", post.content)
-            bundle.putString("urlVideo", post.video)
+            bundle.putSerializable("post", post)
             findNavController().navigate(R.id.action_feedFragment_to_postFragment, bundle)
         })
+
+//        binding.swiperefresh.setOnRefreshListener {
+//            viewModel.refreshPosts()
+//        }
 
         viewModel.newPosts.observe(viewLifecycleOwner){count ->
             if (count>0){
