@@ -11,11 +11,6 @@ import com.samoylenko.kt12.view.load
 
 class PictureFragment : Fragment() {
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.options_post, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
