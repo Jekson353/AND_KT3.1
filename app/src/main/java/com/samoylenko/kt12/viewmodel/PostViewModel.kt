@@ -4,6 +4,7 @@ import android.app.Application
 import android.net.Uri
 import android.widget.Toast
 import androidx.lifecycle.*
+import com.samoylenko.kt12.auth.AppAuth
 import com.samoylenko.kt12.db.AppDb
 import com.samoylenko.kt12.dto.MediaUpload
 import com.samoylenko.kt12.dto.Post
@@ -13,7 +14,11 @@ import com.samoylenko.kt12.error.ApiError
 import com.samoylenko.kt12.uimodel.FeedModel
 import com.samoylenko.kt12.uimodel.PhotoModel
 import com.samoylenko.kt12.util.SingleLiveEvent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
@@ -21,6 +26,7 @@ import java.io.IOException
 val empty = Post(
     id = 0,
     author = "Локальное сохранение",
+    authorId = 0,
     authorAvatar = "",
     content = "",
     published = "",
@@ -30,14 +36,22 @@ val empty = Post(
     likedByMe = false
 )
 
+
 class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PostRepository = PostRepositorySQLiteImpl(
-        AppDb.getInstance(application).postDao
+        AppDb.getInstance(context = application).postDao
     )
+    @ExperimentalCoroutinesApi
+    val posts: LiveData<List<Post>> = AppAuth.getInstance()
+        .authStateFlow
+        .flatMapLatest { (myId, _) ->
+            repository.posts
+                .map { posts->
+                    posts.map { it.copy(ownedByMe = it.authorId == myId) }
+                }
+        }.asLiveData(Dispatchers.Default)
 
-    val posts: LiveData<List<Post>>
-            get() = repository.posts.asLiveData()
-
+    @ExperimentalCoroutinesApi
     val newPosts = posts.switchMap {
         repository.getNewerCount(it.size.toLong())
             .catch { e->e.printStackTrace() }
@@ -163,7 +177,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                     }
                     _postCreated.value = Unit
                     _state.postValue(FeedModel(progressBar = false))
-                    //edited.value = empty
+
                 }catch (e: IOException){
                     _postCreateError.value = ApiError.fromThrowable(e)
                 }
@@ -179,16 +193,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun changeContent(content: String) {
         val text = content.trim()
-        //val namePhoto = photo.trim()
         if (edited.value?.content == text) {
-            //if (edited.value?.content == text && edited.value?.photo == namePhoto) {
             return
         }
-//        if (namePhoto == "") {
-//            edited.value = edited.value?.copy(content = text, photo = "")
-//        } else {
-//            edited.value = edited.value?.copy(content = text, photo = namePhoto)
-//        }
         edited.value = edited.value?.copy(content = text)
     }
 

@@ -22,4 +22,11 @@
     <string name="description_select_photo">Выбрать фото</string>
     <string name="description_take_photo">Сделать фото</string>
     <string name="description_photo">Фото</string>
+    <string name="hint_text_login">Логин</string>
+    <string name="hint_text_password">Пароль</string>
+    <string name="registraton">Регистрация</string>
+    <string name="save_me">Запомнить меня</string>
+    <string name="sign_in">Вход</string>
+    <string name="sign_up">Регистрация</string>
+    <string name="sign_out">Выход</string>
 </resources>

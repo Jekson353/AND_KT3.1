@@ -64,6 +64,9 @@ class PostViewHolder(
             like.text = Calc.intToText(post.likes)
             share.text = post.sharing.toString()
             like.isChecked = post.likedByMe
+
+            menu.visibility = if (post.ownedByMe) View.VISIBLE else View.INVISIBLE
+
             post.attachment?.url.let {
                 if (!it.isNullOrEmpty()){
                     imageViewPlay.load("${BuildConfig.BASE_URL}/media/${post.attachment?.url}").let {
@@ -82,6 +85,7 @@ class PostViewHolder(
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.options_post)
+                    menu.setGroupVisible(R.id.owned, post.ownedByMe)
                     setOnMenuItemClickListener { itemView ->
                         when (itemView.itemId) {
                             R.id.deleteView -> {

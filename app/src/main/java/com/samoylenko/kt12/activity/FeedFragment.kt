@@ -1,12 +1,10 @@
 package com.samoylenko.kt12.activity
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -15,22 +13,55 @@ import com.google.android.material.snackbar.Snackbar
 import com.samoylenko.kt12.R
 import com.samoylenko.kt12.adapter.OnInteractionListener
 import com.samoylenko.kt12.adapter.PostAdapter
+import com.samoylenko.kt12.auth.AppAuth
 import com.samoylenko.kt12.databinding.FragmentFeedBinding
 import com.samoylenko.kt12.dto.Post
 import com.samoylenko.kt12.error.getErrorMessage
+import com.samoylenko.kt12.viewmodel.AuthViewModel
 import com.samoylenko.kt12.viewmodel.PostViewModel
 
 
 class FeedFragment : Fragment() {
     private val viewModel: PostViewModel by viewModels(ownerProducer = { requireActivity() })
-    private val binding by lazy {
-        FragmentFeedBinding.inflate(layoutInflater)
+    private val viewModelMenu: AuthViewModel by viewModels()
+
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_main, menu)
+
+        menu.let {
+            it.setGroupVisible(R.id.unauthenticated, !viewModelMenu.authenticated)
+            it.setGroupVisible(R.id.authenticated, viewModelMenu.authenticated)
+        }
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return  when (item.itemId) {
+            R.id.signin -> {
+                findNavController().navigate(R.id.loginFragment)
+                true
+            }
+            R.id.signup -> {
+                // TODO: реализация регистрации
+                true
+            }
+            R.id.signout -> {
+                AppAuth.getInstance().removeAuth()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val binding = FragmentFeedBinding.inflate(inflater, container, false)
+        setHasOptionsMenu(true)
+        (activity as AppCompatActivity).supportActionBar?.title = "NMedia"
+
         val adapter = PostAdapter(object : OnInteractionListener {
             override fun onEdit(post: Post) {
                 viewModel.edit(post)
@@ -54,7 +85,10 @@ class FeedFragment : Fragment() {
                 post.attachment?.url.let {
                     val bundle = Bundle()
                     bundle.putSerializable("picture", it)
-                    findNavController().navigate(R.id.action_feedFragment_to_pictureFragment, bundle)
+                    findNavController().navigate(
+                        R.id.action_feedFragment_to_pictureFragment,
+                        bundle
+                    )
                 }
             }
 
@@ -114,7 +148,7 @@ class FeedFragment : Fragment() {
 //            viewModel.refreshPosts()
 //        }
 
-        viewModel.newPosts.observe(viewLifecycleOwner){count ->
+        viewModel.newPosts.observe(viewLifecycleOwner){ count ->
             if (count>0){
                 view?.let {
                     Snackbar.make(it, "Доступно новых записей: $count", Snackbar.LENGTH_LONG)

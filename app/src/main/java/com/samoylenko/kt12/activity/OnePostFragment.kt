@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -28,6 +29,7 @@ class OnePostFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         val binding = CardPostBinding.inflate(inflater, container, false)
         val onePost: Post? = arguments?.getSerializable("post") as? Post
         post = onePost
@@ -36,6 +38,11 @@ class OnePostFragment : Fragment() {
             onePost?.id?.let {
                 viewModel.likeById(it)
             }
+        }
+        (activity as AppCompatActivity).supportActionBar?.title = "Пост id: "+onePost?.id
+
+        post?.let {
+            binding.menu.visibility = if (it.ownedByMe) View.VISIBLE else View.INVISIBLE
         }
 
         binding.menu.setOnClickListener {
@@ -107,5 +114,4 @@ class OnePostFragment : Fragment() {
 
         return binding.root
     }
-
 }

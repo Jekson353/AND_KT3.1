@@ -21,4 +21,11 @@
     <string name="description_select_photo">Select photo</string>
     <string name="description_take_photo">Take photo</string>
     <string name="description_photo">Photo</string>
+    <string name="hint_text_login">Login</string>
+    <string name="hint_text_password">Password</string>
+    <string name="registraton">Registration</string>
+    <string name="save_me">Save me</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_out">Sign Out</string>
 </resources>

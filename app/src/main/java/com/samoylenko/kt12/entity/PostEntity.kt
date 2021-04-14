@@ -11,6 +11,7 @@ import com.samoylenko.kt12.enumeration.AttachmentType
 data class PostEntity(
     @PrimaryKey(autoGenerate = true)
     val id:Long,
+    val authorId: Long,
     val author: String,
     val authorAvatar: String,
     val content: String,
@@ -24,12 +25,12 @@ data class PostEntity(
 ){
     companion object{
         fun  fromPost(post: Post): PostEntity =  with(post){
-            PostEntity(id, author, authorAvatar, content, published, sharing, likes, countVisability, likedByMe,  AttachmentEmbeddable.fromPost(post.attachment))
+            PostEntity(id, authorId, author, authorAvatar, content, published, sharing, likes, countVisability, likedByMe,  AttachmentEmbeddable.fromPost(post.attachment))
         }
     }
 }
 
-fun PostEntity.toPost(): Post = Post (id, author, authorAvatar, content, published, sharing, likes, countVisability, likedByMe, attachment?.toPost())
+fun PostEntity.toPost(): Post = Post (id, authorId, author, authorAvatar, content, published, sharing, likes, countVisability, likedByMe, attachment?.toPost())
 
 data class AttachmentEmbeddable(
     var url: String,

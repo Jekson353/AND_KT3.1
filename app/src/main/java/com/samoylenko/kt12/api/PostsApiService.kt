@@ -1,12 +1,13 @@
 package com.samoylenko.kt12.api
 
 import com.samoylenko.kt12.api.PostsApi.BASE_URL
+import com.samoylenko.kt12.auth.AppAuth
+import com.samoylenko.kt12.dto.Auth
 import com.samoylenko.kt12.dto.Media
 import com.samoylenko.kt12.dto.Post
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
@@ -22,6 +23,15 @@ private val logging = HttpLoggingInterceptor().apply {
 private val okhttp = OkHttpClient.Builder()
     .addInterceptor(logging)
     .addInterceptor(PostInterceptor())
+    .addInterceptor { chain ->
+        AppAuth.getInstance().authStateFlow.value.token?.let { token ->
+            val newRequest = chain.request().newBuilder()
+                .addHeader("Authorization", token)
+                .build()
+            return@addInterceptor chain.proceed(newRequest)
+        }
+        chain.proceed(chain.request())
+    }
     .build()
 
 private val retrofit = Retrofit.Builder()
@@ -58,6 +68,10 @@ interface PostsApiService {
     @Multipart
     @POST("media")
     suspend fun upload(@Part media: MultipartBody.Part): Media
+
+    @FormUrlEncoded
+    @POST("users/authentication")
+    suspend fun updateUser(@Field("login") login: String, @Field("pass") pass: String): Auth
 }
 
 object PostsApi {
